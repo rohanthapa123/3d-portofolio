@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
-import * as yup from 'yup';
-import { useMutation } from 'react-query';
 import axios from 'axios';
-import { uploadImage } from '../../utils/uploadImage';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import React, { useState } from 'react';
+import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
+import * as yup from 'yup';
+import { uploadImage } from '../../utils/uploadImage';
 
 // Define your validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -24,6 +24,7 @@ const Dashboard = () => {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+                withCredentials: true
             });
         },
         onSuccess: () => {
@@ -51,6 +52,8 @@ const Dashboard = () => {
         
         resetForm();
     };
+
+   
 
     return (
         <div className='w-full'>

@@ -1,76 +1,106 @@
-import React, { useEffect, useState } from 'react'
-import Navbar from '../components/Notes/NavBar'
-import { styles } from '../style'
-import NoteCard from '../components/Notes/NoteCard'
-import NoteModal from '../components/Notes/NoteModal'
-import axios from 'axios'
-import { useQuery } from 'react-query'
-import Skeleton from '../components/Notes/Skeleton'
+import React, { useEffect, useState } from 'react';
+import Navbar from '../components/Notes/NavBar';
+import { styles } from '../style';
+import NoteCard from '../components/Notes/NoteCard';
+import NoteModal from '../components/Notes/NoteModal';
+import axios from 'axios';
+import { useQuery } from 'react-query';
+import Skeleton from '../components/Notes/Skeleton';
+import { validateToken } from '../utils/validateToken';
+import { useDebounce } from 'use-debounce';
 
-
+const fetchNotes = async (searchText = '') => {
+  const response = await axios.get(`http://localhost:8080/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
+  return response.data;
+};
 
 const Notes = () => {
   const [modalActive, setModalActive] = useState(false);
-
-  const [notes, setNotes] = useState([])
-
   const [pdfUrl, setPdfUrl] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [debouncedSearchText] = useDebounce(searchText, 500); // Debounce search text
 
-  const getNotes = async () => {
-    const response = await axios.get("http://localhost:8080/api/notes");
-    setNotes(response.data);
-    // console.log(response)
-  }
+  // Query for notes
+  const { data: notes, isLoading, isError } = useQuery(
+    ['notes', debouncedSearchText],
+    () => fetchNotes(debouncedSearchText),
+    {
+      keepPreviousData: true,
+      // Ensure the query runs initially when debouncedSearchText is an empty string
+      enabled: true,
+    }
+  );
 
-  const {  isLoading, isError } = useQuery({
-    queryKey: ["notes"],
-    queryFn: getNotes,
-  })
+  const setter = async () => {
+    const valid = await validateToken();
+    setLoggedIn(valid);
+  };
 
+  useEffect(() => {
+    setter();
+  }, []);
 
   if (isError) {
-    return <>
-      <Navbar />
-      <div className={`${styles.paddingX} mt-20 w-full min-h-[100dvh] flex item-center py-5   bg-primary`}>
-        <div className=' w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
-
-          <h1 className='text-4xl'>Error Occured</h1>
+    return (
+      <>
+        <Navbar />
+        <div className={`${styles.paddingX} mt-20 w-full min-h-[100dvh] flex item-center py-5 bg-primary`}>
+          <div className='w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
+            <h1 className='text-4xl'>Error Occurred</h1>
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    );
   }
 
   if (isLoading) {
-    return <>
-      <Navbar />
-      <div className={`${styles.paddingX} mt-20 w-full min-h-[100dvh] flex item-center py-5   bg-primary`}>
-        <div className=' w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
-
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
-          <Skeleton />
+    return (
+      <>
+        <Navbar />
+        <div className={`${styles.paddingX} mt-20 w-full min-h-[100dvh] flex item-center py-5 bg-primary`}>
+          <div className='w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    );
   }
 
   return (
     <div>
-      <Navbar />
-      <div className={`${styles.paddingX} mt-20 w-full min-h-[100dvh] flex item-center py-5   bg-primary`}>
-        <div className=' w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
-
-          {
-            notes?.map((note) => {
-              return <NoteCard key={note.id} id={note.id} thumbnail={note.image} title={note.title} category={note.category} created_at={note.created_at} setModalActive={setModalActive} setPdfUrl={setPdfUrl} url={note.url} downloadurl={note.download} />
-            })
-          }
-
-
+      <Navbar setSearchText={setSearchText} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+      <div className={`${styles.paddingX} mt-20 w-full min-h-[100dvh] item-center py-5 bg-primary`}>
+        <div className='pb-4 flex justify-center'>
+          <input
+            onChange={(e) => setSearchText(e.target.value)}
+            type="search"
+            name="search"
+            className='bg-slate-300 rounded-lg w-[300px] px-4 py-2 text-black md:hidden'
+            placeholder='Type to search'
+          />
+        </div>
+        <div className='w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
+          {notes?.map((note) => (
+            <NoteCard
+              key={note.id}
+              id={note.id}
+              thumbnail={note.image}
+              title={note.title}
+              category={note.category}
+              created_at={note.created_at}
+              setModalActive={setModalActive}
+              setPdfUrl={setPdfUrl}
+              url={note.url}
+              downloadurl={note.download}
+            />
+          ))}
         </div>
       </div>
       <NoteModal
@@ -79,7 +109,7 @@ const Notes = () => {
         pdfUrl={pdfUrl}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Notes
+export default Notes;
