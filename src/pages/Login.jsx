@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import Navbar from '../components/Notes/NavBar'
-import { useMutation } from 'react-query';
 import axios from 'axios';
+import React, { useState } from 'react';
+import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Notes/NavBar';
 
 const Login = () => {
 
@@ -14,7 +14,7 @@ const Login = () => {
     const mutation = useMutation({
         mutationKey: ['login'],
         mutationFn: async () => {
-            const response = await axios.post("http://localhost:8080/api/login", {
+            const response = await axios.post("https://notes-management-system-v1-0-1.onrender.com/api/login", {
                 email: email,
                 password: password
             }, { withCredentials: true })

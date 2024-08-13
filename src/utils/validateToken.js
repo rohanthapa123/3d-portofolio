@@ -3,7 +3,7 @@ import axios from "axios";
 export const validateToken = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:8080/api/auth/validate",
+      "https://notes-management-system-v1-0-1.onrender.com/api/auth/validate",
       {
         withCredentials: true,
       }

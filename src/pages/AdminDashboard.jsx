@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import Navbar from '../components/Notes/NavBar'
-import Dashboard from '../components/Notes/Dashboard'
-import { styles } from '../style'
 import { useNavigate } from 'react-router-dom'
+import Dashboard from '../components/Notes/Dashboard'
+import Navbar from '../components/Notes/NavBar'
+import { styles } from '../style'
 import { validateToken } from '../utils/validateToken'
 
 const AdminDashboard = () => {

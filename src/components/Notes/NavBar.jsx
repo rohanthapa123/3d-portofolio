@@ -1,11 +1,11 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { useMutation } from 'react-query'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { close, logo, menu } from "../../assets"
 import { loggedInNoteNavLinks, notLoggedInNoteNavLinks } from '../../constants'
 import { styles } from '../../style'
-import { useMutation } from 'react-query'
-import { toast } from 'react-toastify'
 const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const [active, setActive] = useState('');
   const [toggle, setToggle] = useState(false);
@@ -15,7 +15,7 @@ const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const mutate = useMutation({
     mutationKey: "logout",
     mutationFn: async () => {
-      await axios.post("http://localhost:8080/api/logout", {}, { withCredentials: true });
+      await axios.post("https://notes-management-system-v1-0-1.onrender.com/api/logout", {}, { withCredentials: true });
     },
     onSuccess: () => {
       navigate("/notes");

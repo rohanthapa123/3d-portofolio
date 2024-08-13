@@ -20,7 +20,7 @@ const Dashboard = () => {
     const mutation = useMutation({
         mutationKey: ["uploadnote"],
         mutationFn: async (formData) => {
-            await axios.post("http://localhost:8080/api/note", formData, {
+            await axios.post("https://notes-management-system-v1-0-1.onrender.com/api/note", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

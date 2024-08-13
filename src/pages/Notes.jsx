@@ -1,16 +1,16 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { useDebounce } from 'use-debounce';
 import Navbar from '../components/Notes/NavBar';
-import { styles } from '../style';
 import NoteCard from '../components/Notes/NoteCard';
 import NoteModal from '../components/Notes/NoteModal';
-import axios from 'axios';
-import { useQuery } from 'react-query';
 import Skeleton from '../components/Notes/Skeleton';
+import { styles } from '../style';
 import { validateToken } from '../utils/validateToken';
-import { useDebounce } from 'use-debounce';
 
 const fetchNotes = async (searchText = '') => {
-  const response = await axios.get(`http://localhost:8080/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
+  const response = await axios.get(`https://notes-management-system-v1-0-1.onrender.com/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
   return response.data;
 };
 
