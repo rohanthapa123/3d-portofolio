@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { close, logo, menu } from "../../assets"
 import { loggedInNoteNavLinks, notLoggedInNoteNavLinks } from '../../constants'
 import { styles } from '../../style'
+const baseurl = "http://localhost:8080"
 const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const [active, setActive] = useState('');
   const [toggle, setToggle] = useState(false);
@@ -15,7 +16,7 @@ const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const mutate = useMutation({
     mutationKey: "logout",
     mutationFn: async () => {
-      await axios.post("https://notes-management-system-v1-0-1.onrender.com/api/logout", {}, { withCredentials: true });
+      await axios.post(`${baseurl}/api/logout`, {}, { withCredentials: true });
     },
     onSuccess: () => {
       navigate("/notes");

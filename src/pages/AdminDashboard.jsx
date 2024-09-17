@@ -12,7 +12,7 @@ const AdminDashboard = () => {
 
     const validate = async () => {
         const valid = await validateToken();
-        if (!localStorage.getItem("token") || localStorage.getItem("token") === "" || !valid) {
+        if (!valid) {
             navigate("/notes");
             setLoggedIn(false)
         } else {

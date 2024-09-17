@@ -14,13 +14,14 @@ const validationSchema = yup.object().shape({
     notepdf: yup.mixed().required('PDF is required'),
 });
 
+const baseurl = "http://localhost:8080";
+
 const Dashboard = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const mutation = useMutation({
         mutationKey: ["uploadnote"],
         mutationFn: async (formData) => {
-            await axios.post("https://notes-management-system-v1-0-1.onrender.com/api/note", formData, {
+            await axios.post(`${baseurl}/api/note`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -1,8 +1,9 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Notes/NavBar';
+import { validateToken } from '../utils/validateToken';
 
 const Login = () => {
 
@@ -14,7 +15,7 @@ const Login = () => {
     const mutation = useMutation({
         mutationKey: ['login'],
         mutationFn: async () => {
-            const response = await axios.post("https://notes-management-system-v1-0-1.onrender.com/api/login", {
+            const response = await axios.post("http://localhost:8080/api/login", {
                 email: email,
                 password: password
             }, { withCredentials: true })
@@ -36,6 +37,21 @@ const Login = () => {
             mutation.mutate();
         }
     }
+
+    const validate = useCallback(async () => {
+        const valid = await validateToken();
+        if (valid) {
+            navigate("/notes/admindashboard");
+            setLoggedIn(true)
+        } else {
+            setLoggedIn(false);
+        }
+
+    }, []);
+
+    useEffect(() => {
+        validate();
+    }, [validate]);
 
     return (
         <div>
