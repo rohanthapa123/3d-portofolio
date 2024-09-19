@@ -1,9 +1,11 @@
 import axios from "axios";
 
 export const validateToken = async () => {
+  
+  const baseurl = import.meta.env.BASE_URL;
   try {
     const response = await axios.get(
-      "http://localhost:8080/api/auth/validate",
+      `${baseurl}/api/auth/validate`,
       {
         withCredentials: true,
       }

@@ -14,7 +14,7 @@ const validationSchema = yup.object().shape({
     notepdf: yup.mixed().required('PDF is required'),
 });
 
-const baseurl = "http://localhost:8080";
+const baseurl = import.meta.env.BASE_URL;
 
 const Dashboard = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);

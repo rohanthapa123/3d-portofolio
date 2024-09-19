@@ -6,7 +6,9 @@ import { toast } from 'react-toastify'
 import { close, logo, menu } from "../../assets"
 import { loggedInNoteNavLinks, notLoggedInNoteNavLinks } from '../../constants'
 import { styles } from '../../style'
-const baseurl = "http://localhost:8080"
+
+const baseurl = import.meta.env.BASE_URL
+
 const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const [active, setActive] = useState('');
   const [toggle, setToggle] = useState(false);
