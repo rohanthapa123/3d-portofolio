@@ -14,7 +14,7 @@ const validationSchema = yup.object().shape({
     notepdf: yup.mixed().required('PDF is required'),
 });
 
-const baseurl = import.meta.env.BASE_URL;
+const baseurl = import.meta.env.VITE_BASE_URL;
 
 const Dashboard = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);

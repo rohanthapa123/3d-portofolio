@@ -7,7 +7,7 @@ import { close, logo, menu } from "../../assets"
 import { loggedInNoteNavLinks, notLoggedInNoteNavLinks } from '../../constants'
 import { styles } from '../../style'
 
-const baseurl = import.meta.env.BASE_URL
+const baseurl = import.meta.env.VITE_BASE_URL
 
 const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const [active, setActive] = useState('');

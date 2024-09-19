@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const validateToken = async () => {
   
-  const baseurl = import.meta.env.BASE_URL;
+  const baseurl = import.meta.env.VITE_BASE_URL;
   try {
     const response = await axios.get(
       `${baseurl}/api/auth/validate`,
