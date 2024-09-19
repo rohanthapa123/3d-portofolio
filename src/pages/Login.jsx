@@ -15,7 +15,7 @@ const Login = () => {
     const mutation = useMutation({
         mutationKey: ['login'],
         mutationFn: async () => {
-            const response = await axios.post("http://localhost:8080/api/login", {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/login`, {
                 email: email,
                 password: password
             }, { withCredentials: true })
