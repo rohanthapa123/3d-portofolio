@@ -14,14 +14,13 @@ const validationSchema = yup.object().shape({
     notepdf: yup.mixed().required('PDF is required'),
 });
 
-const baseurl = import.meta.env.VITE_BASE_URL;
 
 const Dashboard = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const mutation = useMutation({
         mutationKey: ["uploadnote"],
         mutationFn: async (formData) => {
-            await axios.post(`${baseurl}/api/note`, formData, {
+            await axios.post(`${import.meta.env.VITE_BASE_URL}/api/note`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -7,7 +7,6 @@ import { close, logo, menu } from "../../assets"
 import { loggedInNoteNavLinks, notLoggedInNoteNavLinks } from '../../constants'
 import { styles } from '../../style'
 
-const baseurl = import.meta.env.VITE_BASE_URL
 
 const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const [active, setActive] = useState('');
@@ -18,7 +17,7 @@ const Navbar = ({ setSearchText, loggedIn, setLoggedIn }) => {
   const mutate = useMutation({
     mutationKey: "logout",
     mutationFn: async () => {
-      await axios.post(`${baseurl}/api/logout`, {}, { withCredentials: true });
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/api/logout`, {}, { withCredentials: true });
     },
     onSuccess: () => {
       navigate("/notes");
