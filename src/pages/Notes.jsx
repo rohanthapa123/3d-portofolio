@@ -10,7 +10,8 @@ import { styles } from '../style';
 import { validateToken } from '../utils/validateToken';
 
 const fetchNotes = async (searchText = '') => {
-  const response = await axios.get(`https://notes-management-system-v1-0-1.onrender.com/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
+  const baseurl = import.meta.env.BASE_URL;
+  const response = await axios.get(`${baseurl}/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
   return response.data;
 };
 
