@@ -12,7 +12,8 @@ import { validateToken } from '../utils/validateToken';
 const fetchNotes = async (searchText = '') => {
 
   const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
-  return response.data;
+  console.log(response)
+  return response.data.content;
 };
 
 const Notes = () => {
@@ -25,7 +26,7 @@ const Notes = () => {
   // Query for notes
   const { data: notes, isLoading, isError } = useQuery(
     ['notes', debouncedSearchText],
-    () => fetchNotes(debouncedSearchText),
+    ({pageParam=0}) => fetchNotes({pageParam , queryKey:['notes', debouncedSearchText]}),
     {
       keepPreviousData: true,
       // Ensure the query runs initially when debouncedSearchText is an empty string
