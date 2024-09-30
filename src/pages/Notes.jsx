@@ -11,9 +11,9 @@ import { validateToken } from '../utils/validateToken';
 
 const fetchNotes = async ({pageParam=0, queryKey}) => {
   const searchText = queryKey[1];
-  console.log(pageParam)
+  // console.log(pageParam)
   const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/notes${searchText ? `/search?query=${searchText}&` : '?'}pageNumber=${pageParam}&pageSize=10`);
-  console.log("response.data ", response.data)
+  // console.log("response.data ", response.data)
   return response.data;
 };
 
@@ -30,7 +30,7 @@ const Notes = () => {
     fetchNotes,
     {
       getNextPageParam: (lastPage) => {
-        console.log("lastPage", lastPage)
+        // console.log("lastPage", lastPage)
         return lastPage.last ? undefined : lastPage.pageable.pageNumber+1;
       },
       keepPreviousData: true,
@@ -94,9 +94,9 @@ const Notes = () => {
           />
         </div>
         <div className='w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
-          {
+          {/* {
             console.log(notes)
-          }
+          } */}
           {notes?.pages.flatMap((page) => page.content).map((note) => (
             <NoteCard
               key={note.id}
