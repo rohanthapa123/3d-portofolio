@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useInfiniteQuery, useQuery } from 'react-query';
 import { useDebounce } from 'use-debounce';
 import Navbar from '../components/Notes/NavBar';
 import NoteCard from '../components/Notes/NoteCard';
@@ -9,9 +9,11 @@ import Skeleton from '../components/Notes/Skeleton';
 import { styles } from '../style';
 import { validateToken } from '../utils/validateToken';
 
-const fetchNotes = async (searchText = '') => {
-
-  const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/notes${searchText ? `/search?query=${searchText}` : ''}`);
+const fetchNotes = async ({pageParam=0, queryKey}) => {
+  const searchText = queryKey[1];
+  console.log(pageParam)
+  const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/notes${searchText ? `/search?query=${searchText}&` : '?'}pageNumber=${pageParam}&pageSize=10`);
+  console.log("response.data ", response.data)
   return response.data;
 };
 
@@ -23,10 +25,14 @@ const Notes = () => {
   const [debouncedSearchText] = useDebounce(searchText, 500); // Debounce search text
 
   // Query for notes
-  const { data: notes, isLoading, isError } = useQuery(
+  const { data: notes, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery(
     ['notes', debouncedSearchText],
-    () => fetchNotes(debouncedSearchText),
+    fetchNotes,
     {
+      getNextPageParam: (lastPage) => {
+        console.log("lastPage", lastPage)
+        return lastPage.last ? undefined : lastPage.pageable.pageNumber+1;
+      },
       keepPreviousData: true,
       // Ensure the query runs initially when debouncedSearchText is an empty string
       enabled: true,
@@ -88,7 +94,10 @@ const Notes = () => {
           />
         </div>
         <div className='w-full item-center max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
-          {notes?.map((note) => (
+          {
+            console.log(notes)
+          }
+          {notes?.pages.flatMap((page) => page.content).map((note) => (
             <NoteCard
               key={note.id}
               id={note.id}
@@ -103,6 +112,25 @@ const Notes = () => {
             />
           ))}
         </div>
+         {isFetchingNextPage ? (
+          <Skeleton />
+        ) : hasNextPage ? (
+          <div className="flex w-full item-center justify-center">
+            <button
+            onClick={() => fetchNextPage()}
+            className="bg-blue-600 p-4 text-black rounded-xl cursor-pointer text-center items-center "
+          >
+            Load More
+          </button>
+          </div>
+        ) : (
+          <div className="flex w-full items-center justify-center">
+
+          <p
+            className="bg-blue-600 p-4 text-black rounded-xl cursor-not-allowed "
+            >No more data</p>
+            </div>
+        )}
       </div>
       <NoteModal
         modalActive={modalActive}
