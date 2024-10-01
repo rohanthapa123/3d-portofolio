@@ -1,133 +1,147 @@
-import axios from 'axios';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import React, { useState } from 'react';
-import { useMutation } from 'react-query';
-import { toast } from 'react-toastify';
-import * as yup from 'yup';
-import { uploadImage } from '../../utils/uploadImage';
-
-// Define your validation schema with Yup
-const validationSchema = yup.object().shape({
-    title: yup.string().required('Title is required'),
-    category: yup.string().required('Category is required'),
-    noteimage: yup.mixed().required('Image is required'),
-    notepdf: yup.mixed().required('PDF is required'),
-});
-
+import axios from "axios";
+import React, { useState } from "react";
+import { FaRegEdit } from "react-icons/fa";
+import { MdOutlineDelete } from "react-icons/md";
+import { useQuery } from "react-query";
+import { toast } from "react-toastify";
+import "../../index.css";
+import Pagination from "./Pagination";
 
 const Dashboard = () => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const mutation = useMutation({
-        mutationKey: ["uploadnote"],
-        mutationFn: async (formData) => {
-            await axios.post(`${import.meta.env.VITE_BASE_URL}/api/note`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                withCredentials: true
-            });
-        },
-        onSuccess: () => {
-            toast.success("Note Added Successfully");
-            setIsSubmitting(false);
-        },
-        onError: () => {
-            toast.error("Failed to add note");
-            setIsSubmitting(false);
-        }
-    });
+    const [pageNumber, setPageNumber] = useState(0); // Start at page 0
+    const [pageSize, setPageSize] = useState(5); // Default to 5 items per page
 
-    const handleSubmit = async (values, { resetForm }) => {
-        setIsSubmitting(true);
+    const baseurl = import.meta.env.VITE_BASE_URL;
 
-        const imageUrl = await uploadImage(values.noteimage);
-
-        const formData = new FormData();
-        formData.append('title', values.title);
-        formData.append('category', values.category);
-        formData.append('noteimage', imageUrl);
-        formData.append('notepdf', values.notepdf);
-
-        mutation.mutate(formData);
-        
-        resetForm();
+    const getNotes = async (pageNumber, pageSize) => {
+        const response = await axios.get(
+            `${baseurl}/api/notes?pageNumber=${pageNumber}&pageSize=${pageSize}`
+        );
+        console.log(response.data);
+        return response.data;
     };
 
-   
+    const deleteNotes = async (id) => {
+        console.log(id);
+        const confirm = window.confirm("Are you sure to delete note");
+        if (confirm) {
+            const response = await axios.delete(`${baseurl}/api/note/${id}`, {
+                withCredentials: true
+            });
+            if (response.status == 200) {
+
+                toast.success("Note Deleted Successfully")
+                refetch();
+            }
+            else
+                toast.error("Failed to Delete")
+        }
+    }
+    const {
+        data: notes,
+        isLoading,
+        refetch,
+    } = useQuery(["notes", pageNumber, pageSize], () =>
+        getNotes(pageNumber, pageSize)
+    );
+
+    if (isLoading) {
+        return "Loading...";
+    }
+
+    const handlePageChange = (newPageNumber) => {
+        setPageNumber(newPageNumber);
+    };
+
+    const handlePageSizeChange = (e) => {
+        setPageSize(Number(e.target.value));
+        setPageNumber(0); // Reset to first page when page size changes
+    };
 
     return (
-        <div className='w-full'>
-            <Formik
-                initialValues={{
-                    title: '',
-                    category: '',
-                    noteimage: null,
-                    notepdf: null,
-                }}
-                validationSchema={validationSchema}
-                onSubmit={handleSubmit}
-            >
-                {({ setFieldValue }) => (
-                    <Form className="max-w-md w-full mx-auto">
-                        <h1 className='text-3xl text-center'>Insert New Note</h1>
-                        <div className="mb-5">
-                            <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-500">Title</label>
-                            <Field
-                                type="text"
-                                id="title"
-                                name="title"
-                                className="bg-gray-50 border border-gray-500 text-gray-900 dark:text-white placeholder-gray-700 dark:placeholder-gray-500 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-500"
-                                placeholder="Title"
-                            />
-                            <ErrorMessage name="title" component="div" className="text-red-600 text-sm mt-1" />
-                        </div>
-                        <div className='mb-5'>
-                            <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-500">Category</label>
-                            <Field
-                                type="text"
-                                id="category"
-                                name="category"
-                                className="bg-gray-50 border border-gray-500 text-gray-900 placeholder-gray-700 text-sm rounded-lg focus:ring-gray-500 dark:bg-gray-700 focus:border-gray-500 block w-full p-2.5 dark:text-white dark:placeholder-gray-500 dark:border-gray-500"
-                                placeholder="Category"
-                            />
-                            <ErrorMessage name="category" component="div" className="text-red-600 text-sm mt-1" />
-                        </div>
-                        <div className='mb-5'>
-                            <label htmlFor="noteimage" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-500">Upload Thumbnail</label>
-                            <input
-                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-2.5"
-                                id="noteimage"
-                                name="noteimage"
-                                type="file"
-                                onChange={(event) => {
-                                    setFieldValue('noteimage', event.currentTarget.files[0]);
-                                }}
-                            />
-                            <ErrorMessage name="noteimage" component="div" className="text-red-600 text-sm mt-1" />
-                        </div>
-                        <div className='mb-5'>
-                            <label htmlFor="notepdf" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-500">Upload PDF</label>
-                            <input
-                                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-2.5"
-                                id="notepdf"
-                                name="notepdf"
-                                type="file"
-                                onChange={(event) => {
-                                    setFieldValue('notepdf', event.currentTarget.files[0]);
-                                }}
-                            />
-                            <ErrorMessage name="notepdf" component="div" className="text-red-600 text-sm mt-1" />
-                        </div>
-                        <button
-                            disabled={isSubmitting}
-                            type="submit"
-                            className={`p-2 rounded-md cursor-pointer ${isSubmitting ? 'bg-blue-300' : 'bg-blue-500 hover:bg-blue-600'}`}
+        <div className="p-6 w-full bg-gray-900 text-white rounded-lg shadow-lg">
+            <div className="card w-full p-5 bg-gray-800 rounded-lg">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold text-gray-200">All Notes</h3>
+                    <label className="flex items-center">
+                        <span className="text-sm mr-2">Push Alerts</span>
+                        <input
+                            type="checkbox"
+                            className="toggle toggle-blue"
+                            defaultChecked
+                        />
+                    </label>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="table-auto w-full border-collapse">
+                        <thead className="bg-gray-700 text-gray-400">
+                            <tr>
+                                <th className="w-24 text-center p-3">Image</th>
+                                <th className="p-3">Title</th>
+                                <th className="p-3">Category</th>
+                                <th className="p-3">Created At</th>
+                                <th className="w-16 p-3"></th>
+                                <th className="w-16 p-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {notes?.content?.map((note) => (
+                                <tr
+                                    key={note.id}
+                                    className="text-center bg-gray-800 hover:bg-gray-700"
+                                >
+                                    <td className="p-3">
+                                        <img
+                                            src={note.image}
+                                            className="w-10 rounded-full"
+                                            alt=""
+                                        />
+                                    </td>
+                                    <td className="p-3">{note.title}</td>
+                                    <td className="p-3">{note.category}</td>
+                                    <td className="p-3">{note.created_at.slice(0, 10)}</td>
+                                    <td className="p-3">
+                                        <button className="text-blue-500 hover:text-blue-400 ">
+                                            <FaRegEdit size={24} />
+                                        </button>
+                                    </td>
+                                    <td className="p-3">
+                                        <button className="text-red-500 hover:text-red-400" onClick={(e) => deleteNotes(note.id)}>
+                                            <MdOutlineDelete size={24} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="flex flex-col md:flex-row justify-between items-center mt-4 text-sm text-gray-400">
+                    <div className="flex items-center">
+                        Show
+                        <select
+                            className="ml-2 p-1 border border-gray-600 bg-gray-900 text-gray-400 rounded"
+                            value={pageSize}
+                            onChange={handlePageSizeChange}
                         >
-                            {isSubmitting ? 'Submitting...' : 'Submit'}
-                        </button>
-                    </Form>
-                )}
-            </Formik>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                        </select>
+                        per page
+                    </div>
+                    <div className="flex items-center space-x-4">
+                        <span>
+                            {(pageNumber * pageSize) +
+                                1 +
+                                " - " +
+                                Math.min((pageNumber * pageSize) + pageSize, notes.totalElements) +
+                                " of " +
+                                notes.totalElements}
+                        </span>
+                        <Pagination pageNumber={pageNumber} setPageNumber={setPageNumber} totalPages={notes.totalPages} />
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

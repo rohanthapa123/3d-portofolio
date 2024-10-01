@@ -4,6 +4,7 @@ import Dashboard from '../components/Notes/Dashboard'
 import Navbar from '../components/Notes/NavBar'
 import { styles } from '../style'
 import { validateToken } from '../utils/validateToken'
+import AddNote from '../components/Notes/AddNote'
 
 const AdminDashboard = () => {
 
@@ -28,10 +29,17 @@ const AdminDashboard = () => {
     return (
         <div>
             <Navbar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
-            <div className={`${styles.paddingX}  mt-20 w-full min-h-[89dvh] flex item-center py-5   bg-primary`}>
+            <div className={`${styles.paddingX}  mt-20 w-full min-h-[89dvh]  py-5   bg-primary`}>
                 <div className=' w-full item-center  max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
                     {
                         loggedIn && <Dashboard />
+                    }
+                </div>
+            </div>
+            <div className={`${styles.paddingX}  w-full min-h-[89dvh] flex item-center py-5  bg-primary`}>
+                <div className=' w-full item-center  max-w-7xl mx-auto flex flex-wrap gap-6 m-auto justify-evenly'>
+                    {
+                        loggedIn && <AddNote />
                     }
                 </div>
             </div>
