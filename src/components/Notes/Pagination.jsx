@@ -32,7 +32,7 @@ const Pagination = ({ totalPages, pageNumber, setPageNumber }) => {
         <div className="pagination flex space-x-1">
             {/* Previous button */}
             <button
-                className="px-2 py-1 rounded hover:bg-gray-700"
+                className="px-2 py-1 rounded hover:bg-gray-700 disabled:cursor-not-allowed"
                 disabled={pageNumber === 0}
                 onClick={handlePrevPage}
             >
@@ -42,7 +42,7 @@ const Pagination = ({ totalPages, pageNumber, setPageNumber }) => {
             {/* First page */}
             {start > 1 && (
                 <button
-                    className="px-2 py-1 border border-gray-600 rounded hover:bg-gray-700"
+                    className="px-2 py-1 border border-gray-600 rounded hover:bg-gray-700 disabled:cursor-not-allowed"
                     onClick={() => setPageNumber(0)} // setPageNumber to 0 since it's 0-based
                 >
                     1

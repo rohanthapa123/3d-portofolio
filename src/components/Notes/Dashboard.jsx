@@ -59,8 +59,8 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="p-6 w-full bg-gray-900 text-white rounded-lg shadow-lg">
-            <div className="card w-full p-5 bg-gray-800 rounded-lg">
+        <div className="p-6 w-full bg-gray-900 text-white rounded-lg shadow-lg min-h-[548px]">
+            <div className="card w-full p-5 bg-gray-800 rounded-lg min-h-[500px] relative">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-200">All Notes</h3>
                     <label className="flex items-center">
@@ -73,11 +73,11 @@ const Dashboard = () => {
                     </label>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="table-auto w-full border-collapse">
+                    <table className="table-auto w-full border-collapse ">
                         <thead className="bg-gray-700 text-gray-400">
                             <tr>
                                 <th className="w-24 text-center p-3">Image</th>
-                                <th className="p-3">Title</th>
+                                <th className="p-3 w-[550px] ">Title</th>
                                 <th className="p-3">Category</th>
                                 <th className="p-3">Created At</th>
                                 <th className="w-16 p-3"></th>
@@ -90,7 +90,7 @@ const Dashboard = () => {
                                     key={note.id}
                                     className="text-center bg-gray-800 hover:bg-gray-700"
                                 >
-                                    <td className="p-3">
+                                    <td className="p-3 flex justify-center ">
                                         <img
                                             src={note.image}
                                             className="w-10 rounded-full"
@@ -115,7 +115,7 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="flex flex-col md:flex-row justify-between items-center mt-4 text-sm text-gray-400">
+                <div className="flex flex-col md:flex-row justify-between items-center mt-4 text-sm text-gray-400 absolute w-full px-8 bottom-4 ">
                     <div className="flex items-center">
                         Show
                         <select
@@ -129,7 +129,7 @@ const Dashboard = () => {
                         </select>
                         per page
                     </div>
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-4  ">
                         <span>
                             {(pageNumber * pageSize) +
                                 1 +
