@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const uploadImage = async (file) => {
   const formData = new FormData();
@@ -12,6 +13,7 @@ export const uploadImage = async (file) => {
     );
     return response.data.secure_url;
   } catch (error) {
-    console.log(error);
+    toast.error("Failed to upload Image");
+    // console.log(error);
   }
 };

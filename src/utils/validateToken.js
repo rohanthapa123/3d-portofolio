@@ -17,6 +17,6 @@ export const validateToken = async () => {
       return false;
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
   }
 };

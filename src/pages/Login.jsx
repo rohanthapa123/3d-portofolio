@@ -9,7 +9,8 @@ const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
+    const [loggedIn, setLoggedIn] = useState();
+    
     const navigate = useNavigate()
 
     const mutation = useMutation({

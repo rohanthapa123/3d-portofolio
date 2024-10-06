@@ -14,6 +14,7 @@ const fetchNotes = async ({pageParam=0, queryKey}) => {
   // console.log(pageParam)
   const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/notes${searchText ? `/search?query=${searchText}&` : '?'}pageNumber=${pageParam}&pageSize=10`);
   // console.log("response.data ", response.data)
+  // console.log("response.data ", response.data)
   return response.data;
 };
 
@@ -30,6 +31,7 @@ const Notes = () => {
     fetchNotes,
     {
       getNextPageParam: (lastPage) => {
+        // console.log("lastPage", lastPage)
         // console.log("lastPage", lastPage)
         return lastPage.last ? undefined : lastPage.pageable.pageNumber+1;
       },
