@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useMutation } from 'react-query';
 import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { uploadImage } from '../../utils/uploadImage';
+import { useNavigate, useParams } from 'react-router-dom';
+import { fetchNoteById } from '../../utils/fetch';
 
 // Define your validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -17,19 +19,49 @@ const validationSchema = yup.object().shape({
 
 const AddNote = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [initialValues, setInitialValues] = useState({
+        title: '',
+        category: '',
+        noteimage: null,
+        notepdf: null,
+    })
+
+    const [existingImage, setExistingImage] = useState("");
+    const [existingPdf, setExistingPdf] = useState("");
+
+
+    const [editing, setEditing] = useState(false);
+
+    const { id } = useParams();
+
+    const navigate = useNavigate();
     const mutation = useMutation({
         mutationKey: ["uploadnote"],
         mutationFn: async (formData) => {
-            await axios.post(`${import.meta.env.VITE_BASE_URL}/api/note`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                withCredentials: true
-            });
+            if (editing) {
+
+                await axios.put(`${import.meta.env.VITE_BASE_URL}/api/note/${id}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    withCredentials: true
+                });
+            } else {
+
+                await axios.post(`${import.meta.env.VITE_BASE_URL}/api/note`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    withCredentials: true
+                });
+            }
         },
         onSuccess: () => {
             toast.success("Note Added Successfully");
+            navigate("/notes/admindashboard");
             setIsSubmitting(false);
+
         },
         onError: () => {
             toast.error("Failed to add note");
@@ -39,37 +71,64 @@ const AddNote = () => {
 
     const handleSubmit = async (values, { resetForm }) => {
         setIsSubmitting(true);
-
-        const imageUrl = await uploadImage(values.noteimage);
+        let imageUrl;
+        if (values.noteimage) {
+            imageUrl = await uploadImage(values.noteimage);
+        } else {
+            imageUrl = existingImage;
+        }
 
         const formData = new FormData();
         formData.append('title', values.title);
         formData.append('category', values.category);
         formData.append('noteimage', imageUrl);
-        formData.append('notepdf', values.notepdf);
+        if (values.notepdf) {
+            formData.append('notepdf', values.notepdf);
+        } else {
+            formData.append('existingPdf', existingPdf)
+        }
 
         mutation.mutate(formData);
-        
+
         resetForm();
     };
 
-   
+
+    const check = async () => {
+        if (id) {
+            setEditing(true);
+            //console.log(id)
+            const response = await fetchNoteById(id);
+            setInitialValues({
+                title: response.title || '',
+                category: response.category || '',
+                noteimage: response.image || null,
+                notepdf: response.url || null
+            })
+
+            setExistingImage(response.image);
+            setExistingPdf(response.url)
+
+        }
+
+    }
+
+    useEffect(() => {
+        check();
+    }, []);
+
 
     return (
         <div className='w-full'>
             <Formik
-                initialValues={{
-                    title: '',
-                    category: '',
-                    noteimage: null,
-                    notepdf: null,
-                }}
+                initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={handleSubmit}
+                enableReinitialize={true}
             >
                 {({ setFieldValue }) => (
                     <Form className="max-w-md w-full mx-auto">
-                        <h1 className='text-3xl text-center'>Insert New Note</h1>
+                        <h1 className='text-3xl text-center'>{editing ? "Update Note" : "Insert New Note"}</h1>
                         <div className="mb-5">
                             <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-500">Title</label>
                             <Field
@@ -93,6 +152,12 @@ const AddNote = () => {
                             <ErrorMessage name="category" component="div" className="text-red-600 text-sm mt-1" />
                         </div>
                         <div className='mb-5'>
+                            {
+                                existingImage && <>
+                                    <p>CurrentThumbnail</p>
+                                    <img src={existingImage} className='w-24 ' alt="" srcset="" />
+                                </>
+                            }
                             <label htmlFor="noteimage" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-500">Upload Thumbnail</label>
                             <input
                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-2.5"
@@ -106,6 +171,12 @@ const AddNote = () => {
                             <ErrorMessage name="noteimage" component="div" className="text-red-600 text-sm mt-1" />
                         </div>
                         <div className='mb-5'>
+                            {
+                                existingPdf && <>
+                                    <p>Current PDF</p>
+                                    <a href={existingImage} target='_blank' rel="noopener noreferrer" className="text-blue-600 underline">View PDF</a>
+                                </>
+                            }
                             <label htmlFor="notepdf" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-500">Upload PDF</label>
                             <input
                                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-2.5"

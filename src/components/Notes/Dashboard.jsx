@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { FaRegEdit } from "react-icons/fa";
+import { FaPlus, FaRegEdit } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import "../../index.css";
 import Pagination from "./Pagination";
+import { NavLink } from "react-router-dom";
 
 const Dashboard = () => {
     const [pageNumber, setPageNumber] = useState(0); // Start at page 0
@@ -17,12 +18,12 @@ const Dashboard = () => {
         const response = await axios.get(
             `${baseurl}/api/notes?pageNumber=${pageNumber}&pageSize=${pageSize}`
         );
-        console.log(response.data);
+        //console.log(response.data);
         return response.data;
     };
 
     const deleteNotes = async (id) => {
-        console.log(id);
+        // console.log(id);
         const confirm = window.confirm("Are you sure to delete note");
         if (confirm) {
             const response = await axios.delete(`${baseurl}/api/note/${id}`, {
@@ -60,19 +61,19 @@ const Dashboard = () => {
 
     return (
         <div className="p-6 w-full bg-gray-900 text-white rounded-lg shadow-lg min-h-[548px]">
-            <div className="card w-full p-5 bg-gray-800 rounded-lg min-h-[500px] relative">
+            <div className="card w-full p-5 bg-gray-800 rounded-lg min-h-[500px] flex flex-col">
+
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-200">All Notes</h3>
                     <label className="flex items-center">
-                        <span className="text-sm mr-2">Push Alerts</span>
-                        <input
-                            type="checkbox"
-                            className="toggle toggle-blue"
-                            defaultChecked
-                        />
+                        <div className="button w-full flex justify-end">
+                            <NavLink to={"add"}>
+                                <button className="flex items-center text-lg gap-4 bg-blue-500 p-2 rounded-lg my-2" >Add New <FaPlus size={20} /> </button>
+                            </NavLink>
+                        </div>
                     </label>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto flex-grow">
                     <table className="table-auto w-full border-collapse ">
                         <thead className="bg-gray-700 text-gray-400">
                             <tr>
@@ -101,9 +102,11 @@ const Dashboard = () => {
                                     <td className="p-3">{note.category}</td>
                                     <td className="p-3">{note.created_at.slice(0, 10)}</td>
                                     <td className="p-3">
-                                        <button className="text-blue-500 hover:text-blue-400 ">
-                                            <FaRegEdit size={24} />
-                                        </button>
+                                        <NavLink to={`edit/${note.id}`} >
+                                            <button className="text-blue-500 hover:text-blue-400 ">
+                                                <FaRegEdit size={24} />
+                                            </button>
+                                        </NavLink>
                                     </td>
                                     <td className="p-3">
                                         <button className="text-red-500 hover:text-red-400" onClick={(e) => deleteNotes(note.id)}>
@@ -115,7 +118,7 @@ const Dashboard = () => {
                         </tbody>
                     </table>
                 </div>
-                <div className="flex flex-col md:flex-row justify-between items-center mt-4 text-sm text-gray-400 absolute w-full px-8 bottom-4 ">
+                <div className="flex flex-col md:flex-row  justify-between items-center mt-8 text-sm text-gray-400  w-full px-8 bottom-4 ">
                     <div className="flex items-center">
                         Show
                         <select
