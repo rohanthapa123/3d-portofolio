@@ -101,16 +101,16 @@ const Notes = () => {
           } */}
           {notes?.pages.flatMap((page) => page.content).map((note) => (
             <NoteCard
-              key={note.id}
-              id={note.id}
-              thumbnail={note.image}
-              title={note.title}
-              category={note.category}
-              created_at={note.created_at}
+              key={note?.id}
+              id={note?.id}
+              thumbnail={note?.image}
+              title={note?.title}
+              category={note?.category}
+              created_at={note?.created_at}
               setModalActive={setModalActive}
               setPdfUrl={setPdfUrl}
-              url={note.url}
-              downloadurl={note.download}
+              url={note?.url}
+              downloadurl={note?.download}
             />
           ))}
         </div>
