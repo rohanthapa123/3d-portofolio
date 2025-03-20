@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { IoArrowBackOutline } from 'react-icons/io5'
-import { NavLink, useNavigate, useParams } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import AddNote from '../components/Notes/AddNote'
 import Navbar from '../components/Notes/NavBar'
 import { styles } from '../style'

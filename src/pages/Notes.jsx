@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useInfiniteQuery, useQuery } from 'react-query';
+import { useEffect, useState } from 'react';
+import { useInfiniteQuery } from 'react-query';
 import { useDebounce } from 'use-debounce';
 import Navbar from '../components/Notes/NavBar';
 import NoteCard from '../components/Notes/NoteCard';
